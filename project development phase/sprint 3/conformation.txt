@@ -1,0 +1,23 @@
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+
+def getdata(url):
+	r = requests.get(url)
+	return r.text
+
+train_name = "03391-express-new-delhi-clone-special-rgd-to-ndls"
+
+
+url = "https://www.railyatri.in/live-train-status/"+train_name
+
+htmldata = getdata(url)
+soup = BeautifulSoup(htmldata, 'html.parser')
+
+data = []
+for item in soup.find_all('script', type="application/ld+json"):
+	data.append(item.get_text())
+
+df = pd.read_json(data[2])
+print(df["mainEntity"][0]['name'])
+print(df["mainEntity"][0]['acceptedAnswer']['text'])
